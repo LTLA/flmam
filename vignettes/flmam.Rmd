@@ -1,0 +1,96 @@
+---
+title: Fitting linear models to any matrix representation
+author: 
+- name: Aaron Lun
+  affiliation: Cancer Research UK Cambridge Institute, Cambridge, United Kingdom
+date: "Revised: 14 September 2018"
+output:
+  BiocStyle::html_document:
+    toc_float: true
+package: flmam 
+vignette: >
+  %\VignetteIndexEntry{Fitting linear models to any matrix}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}    
+---
+
+```{r, echo=FALSE, results="hide", message=FALSE}
+require(knitr)
+opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE)
+```
+
+```{r setup, echo=FALSE, message=FALSE}
+library(flmam)
+set.seed(100)
+```
+
+# Introduction
+
+The `r Biocpkg("flmam")` package (pronounced "flim-flam", for the sake of convenience) does exactly what it says on the tin - fit linear models to any matrix.
+By taking advantage of `r Biocpkg("beachmat")`, we support any matrix representation including sparse or HDF5-backed matrices.
+
+# Different fitting modes
+
+We support fitting with a design matrix, as in `lm.fit`:
+
+```{r}
+y <- matrix(rnorm(20000), ncol=100)
+covariate <- runif(ncol(y))
+design <- model.matrix(~covariate)
+fitLM(y, design)
+```
+
+For one-way layouts, greater efficiency can be achieved by passing the factor directly:
+
+```{r}
+g <- gl(20, 5)
+(fit <- fitLM(y, g))
+```
+
+Each row of the output `DataFrame` contains the fit results for the corresponding row of `y`.
+By default, a matrix of coefficients is returned in `coefficients`, along with the residual variances in `variances`.
+
+# Different matrix types
+
+For demonstration, let's try it with sparse matrices, namely `dgCmatrix` objects from the `r CRANpkg("Matrix")` package.
+
+```{r}
+library(Matrix)
+y <- rsparsematrix(2e4, 100, density=0.1)
+groups <- gl(20, 5)
+fitLM(y, groups)
+```
+
+We can also use with HDF5-backed matrices from the `r Biocpkg("HDF5Array")` package.
+
+```{r}
+library(HDF5Array)
+z <- as(matrix(rnorm(2000000), ncol=100), "HDF5Array")
+fitLM(z, groups)
+```
+
+# Further tweaking
+
+We can control the rows to be fitted with the `rows` argument.
+This is more efficient than subsetting the matrix beforehand.
+
+```{r}
+y <- matrix(rnorm(20000), ncol=100)
+groups <- gl(10, 10)
+fitLM(y, groups, rows=1:10)
+```
+
+Users can set `BPPARAM` to specify how parallelization should be achieved.
+By default, the registered backend from `bpparam()` will be used.
+
+```{r}
+y <- matrix(rnorm(20000), ncol=100)
+groups <- gl(10, 10)
+fitLM(y, groups, BPPARAM=SnowParam(3))
+```
+
+# Session information
+
+```{r}
+sessionInfo()
+```
