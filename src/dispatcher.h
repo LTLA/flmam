@@ -7,9 +7,9 @@
 
 namespace flmam {
 
-inline std::unique_ptr<LM_base> dispatcher (SEXP qr, SEXP aux, SEXP groups) {
+inline std::unique_ptr<LM_base> dispatcher (SEXP qr, SEXP groups) {
     if (groups==R_NilValue) {
-        return std::unique_ptr<LM_base>(new LM_general(qr, aux));
+        return std::unique_ptr<LM_base>(new LM_general(qr));
     } else {
         return std::unique_ptr<LM_base>(new LM_oneway(groups));
     }

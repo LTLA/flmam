@@ -8,7 +8,7 @@
 extern "C" {
 
 static const R_CallMethodDef all_call_entries[] = {
-    REGISTER(fit_lm, 4),
+    REGISTER(fit_lm, 3),
     {NULL, NULL, 0}
 };
 

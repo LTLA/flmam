@@ -1,8 +1,8 @@
 #include "flmam.h"
 
 template<class M>
-SEXP fit_lm_internal (M emat, SEXP qr, SEXP qraux, SEXP groups) {
-    auto ptr=flmam::dispatcher(qr, qraux, groups);
+SEXP fit_lm_internal (M emat, SEXP qr, SEXP groups) {
+    auto ptr=flmam::dispatcher(qr, groups);
 
     const int ncoefs=ptr->get_ncoefs();
     const int ncells=ptr->get_nobs();
@@ -30,15 +30,15 @@ SEXP fit_lm_internal (M emat, SEXP qr, SEXP qraux, SEXP groups) {
     return Rcpp::List::create(coefs, vars);
 }
 
-SEXP fit_lm (SEXP exprs, SEXP qr, SEXP qraux, SEXP groups) {
+SEXP fit_lm (SEXP exprs, SEXP qr, SEXP groups) {
     BEGIN_RCPP
     int rtype=beachmat::find_sexp_type(exprs);
     if (rtype==INTSXP) {
         auto emat=beachmat::create_integer_matrix(exprs);
-        return fit_lm_internal(emat.get(), qr, qraux, groups);
+        return fit_lm_internal(emat.get(), qr, groups);
     } else {
         auto emat=beachmat::create_numeric_matrix(exprs);
-        return fit_lm_internal(emat.get(), qr, qraux, groups);
+        return fit_lm_internal(emat.get(), qr, groups);
     }
     END_RCPP
 }

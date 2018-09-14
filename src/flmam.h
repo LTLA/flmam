@@ -8,7 +8,7 @@
 
 extern "C" {
 
-SEXP fit_lm (SEXP, SEXP, SEXP, SEXP);
+SEXP fit_lm (SEXP, SEXP, SEXP);
 
 }
 

@@ -8,7 +8,7 @@ namespace flmam {
 
 class LM_general : public LM_base {
 public:
-    LM_general(SEXP Qr, SEXP Aux) : qr(Qr, Aux) {
+    LM_general(Rcpp::List QR) : qr(QR["qr"], QR["qraux"], QR["pivot"]) {
         workspace.resize(get_nobs());
     }
 

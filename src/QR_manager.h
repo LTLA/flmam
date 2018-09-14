@@ -15,9 +15,15 @@ namespace flmam {
 
 class QR_manager {
 public:
-    QR_manager(SEXP qr, SEXP qraux) : QR(qr), AUX(qraux), nobs(QR.nrow()), ncoef(QR.ncol()), info(0), lwork(-1) {
+    QR_manager(SEXP qr, SEXP qraux, SEXP pivot) : QR(qr), AUX(qraux), PIVOT(pivot), nobs(QR.nrow()), ncoef(QR.ncol()), info(0), lwork(-1) {
         if (AUX.size()!=ncoef) { 
             throw std::runtime_error("QR auxiliary vector should be of length 'ncol(Q)'"); 
+        }
+        if (PIVOT.size()!=ncoef) {
+            throw std::runtime_error("pivoting vector should be of length 'ncol(Q)'");
+        }
+        if (ncoef && (*std::max_element(PIVOT.begin(), PIVOT.end()) < 1 || *std::min_element(PIVOT.begin(), PIVOT.end()) > ncoef)) {
+            throw std::runtime_error("pivoting vector should contain values in [1, ncoef]");                        
         }
     
         // Workspace query (should only depend on 'side', 'nobs', and 'ncoef').
@@ -34,7 +40,7 @@ public:
         }
     
         lwork=static_cast<int>(tmpwork+0.5);
-        work.resize(lwork);
+        work.resize(std::max(ncoef, lwork));
         return;
     } 
        
@@ -67,12 +73,19 @@ public:
             err << "coefficient calculations failed (error code " << info << ")";
             throw std::runtime_error(err.str().c_str());
         }
+
+        // Reordering the coefficients.
+        for (size_t p=0; p<ncoef; ++p) {
+            work[PIVOT[p]-1]=rhs[p];
+        }
+        std::copy(work.begin(), work.begin()+ncoef, rhs);
         return;
     }
 
 private:
     Rcpp::NumericMatrix QR;
     Rcpp::NumericVector AUX;
+    Rcpp::IntegerVector PIVOT;
 
     const int nobs, ncoef;
     int info, lwork;
