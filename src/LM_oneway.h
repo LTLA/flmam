@@ -40,9 +40,10 @@ public:
         double output=0;
         for (size_t i=0; i<ngroups; ++i) {
             if (npergroup[i]>1) {
-                output+=workspace[i]/(npergroup[i]-1);
+                output+=workspace[i] * (npergroup[i]-1);
             }
         }
+        output /= get_nobs() - ngroups;
         
         return output;
     }
