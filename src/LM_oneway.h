@@ -47,7 +47,12 @@ public:
     // Subclassed virtual methods.
     double fit(const double* values, double* out_means) {
         fit0(values, out_means, workspace.data(), false, true);
-        return std::accumulate(workspace.begin(), workspace.end(), 0.0) / (get_nobs() - ngroups);
+
+        if (get_nobs()==ngroups) {
+            return R_NaN;
+        } else {
+            return std::accumulate(workspace.begin(), workspace.end(), 0.0) / (get_nobs() - ngroups);
+        }
     }
 
     int get_nobs() const {
@@ -87,7 +92,7 @@ public:
                     if (npergroup[i]>1) { 
                         out_vars[i]/=npergroup[i] - 1;
                     } else {
-                        out_vars[i]=R_NaReal;
+                        out_vars[i]=R_NaN;
                     }
                 }
             }

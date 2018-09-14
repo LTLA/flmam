@@ -47,7 +47,7 @@ public:
 
         if (!return_rss) {
             if (nobs==ncoefs) {
-                curvar=R_NaReal;
+                curvar=R_NaN;
             } else {
                 curvar /= nobs - ncoefs;
             }
