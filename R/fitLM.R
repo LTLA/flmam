@@ -1,5 +1,5 @@
 #' @export
-fitLM <- function(x, design, tol=1e-8) 
+fitLM <- function(x, design) 
 # Fits a linear model in 'design' to each row of 'x'.
 # 
 # written by Aaron Lun
@@ -7,10 +7,12 @@ fitLM <- function(x, design, tol=1e-8)
 {
     if (!is.null(dim(design))) {
         qr.out <- qr(design, LAPACK=TRUE)
-        d <- diag(out$qr)
-        if (!all(abs(d) > tol)) { 
+        d <- diag(qr.out$qr)
+
+        if (!all(abs(d) > 1e-8)) { 
             stop("design matrix is not of full rank")
         }
+
         groups <- NULL
         coef.names <- colnames(design)
     } else {
@@ -25,6 +27,6 @@ fitLM <- function(x, design, tol=1e-8)
     results$coefficients <- t(results$coefficients)
 
     dimnames(results$coefficients) <- list(rownames(x), coef.names)
-    names(variance) <- rownames(x)
+    names(results$variance) <- rownames(x)
     results
 }
