@@ -5,19 +5,21 @@
 \description{Fit a linear model to any matrix representation.}
 
 \usage{
-fitLM(x, design) 
+fitLM(x, design, rows=NULL, BPPARAM=bpparam()) 
 }
 
 \arguments{
-    \code{x}{A matrix-like object where each row is a feature and columns are samples.}
-    \code{design}{A numeric design matrix with number of rows equal to \code{ncol(x)}.
+    \item{x}{A matrix-like object where each row is a feature and columns are samples.}
+    \item{design}{A numeric design matrix with number of rows equal to \code{ncol(x)}.
         Alternatively, a factor of length \code{ncol(x)} for one-way layouts.}
+    \item{rows}{A integer, logical or character vector indicating the rows of \code{x} for which to fit a linear model.}
+    \item{BPPARAM}{A \linkS4class{BiocParallelParam} object specifying how parallelization should be achieved.}
 }
 
 \details{
 This fits a linear model to each row of observations in \code{x}.
-With the default settings, it effectively does the same calculations as:
-\preformatted{    lm.fit(x=design, y=as.matrix(t(x)))
+It effectively does the same calculations as:
+\preformatted{    lm.fit(x=design, y=as.matrix(t(x[rows,,drop=FALSE])))
 }
 but without requiring the expensive realization of sparse or file-backed matrix representations.
 
