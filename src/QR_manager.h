@@ -22,10 +22,11 @@ public:
     
         // Workspace query (should only depend on 'side', 'nobs', and 'ncoef').
         double tmpwork=0;
-        const char dummytrans='T';
         work.resize(nobs); // using 'work' as a dummy for 'rhs' in this call, just in case.
-    
-        F77_CALL(dormqr)(&side, &dummytrans, &nobs, &ncol, &ncoef,
+        constexpr char side='L', trans='T';
+        constexpr int ncol=1;
+
+        F77_CALL(dormqr)(&side, &trans, &nobs, &ncol, &ncoef,
                 QR.begin(), &nobs, AUX.begin(), work.data(), &nobs,
                 &tmpwork, &lwork, &info); 
         if (info) { 
@@ -46,6 +47,8 @@ public:
     }
 
     void multiply(double* rhs, const char trans='T') {
+        constexpr char side='L';
+        constexpr int ncol=1;
         F77_CALL(dormqr)(&side, &trans, &nobs, &ncol, &ncoef, QR.begin(), &nobs, AUX.begin(), rhs, &nobs, work.data(), &lwork, &info); 
         if (info) { 
             std::stringstream err;
@@ -56,7 +59,9 @@ public:
     }
 
     void backsolve(double* rhs) {
-        F77_CALL(dtrtrs)(&uplo, &xtrans, &diag, &ncoef, &ncol, QR.begin(), &nobs, rhs, &nobs, &info);
+        constexpr char uplo='U', diag='N', trans='N';
+        constexpr int ncol=1;
+        F77_CALL(dtrtrs)(&uplo, &trans, &diag, &ncoef, &ncol, QR.begin(), &nobs, rhs, &nobs, &info);
         if (info) { 
             std::stringstream err;
             err << "coefficient calculations failed (error code " << info << ")";
@@ -72,9 +77,6 @@ private:
     const int nobs, ncoef;
     int info, lwork;
     std::vector<double> work;
-
-    static const int ncol=1;
-    static const char side='L', uplo='U', xtrans='N', diag='N';
 };
 
 }
