@@ -1,3 +1,6 @@
+#ifndef LM_BASE_H
+#define LM_BASE_H
+
 #include "Rcpp.h"
 
 namespace flmam {
@@ -19,3 +22,5 @@ protected:
 };
 
 };
+
+#endif

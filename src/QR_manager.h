@@ -1,3 +1,6 @@
+#ifndef QR_MANAGER_H
+#define QR_MANAGER_H
+
 #include "Rcpp.h"
 #include "R_ext/BLAS.h"
 #include "R_ext/Lapack.h"
@@ -84,3 +87,5 @@ int QR_manager::get_ncoefs() const {
 }
 
 }
+
+#endif

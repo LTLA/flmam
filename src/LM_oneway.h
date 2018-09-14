@@ -1,3 +1,6 @@
+#ifndef LM_ONEWAY
+#define LM_ONEWAY
+
 #include "LM_base.h"
 
 namespace flmam {
@@ -109,3 +112,5 @@ const std::vector<int>& LM_oneway::get_group_sizes() const {
 }
 
 }
+
+#endif

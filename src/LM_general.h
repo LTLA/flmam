@@ -1,3 +1,6 @@
+#ifndef LM_GENERAL_H
+#define LM_GENERAL_H
+
 #include "LM_base.h"
 #include "QR_manager.hpp"
 
@@ -59,3 +62,5 @@ int LM_general::get_ncoefs() const{
 }
 
 }
+
+#endif
