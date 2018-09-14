@@ -8,8 +8,6 @@ SEXP fit_lm_internal (M emat, SEXP qr, SEXP groups) {
     const int ncells=ptr->get_nobs();
     if (ncells!=int(emat->get_ncol())) {
         throw std::runtime_error("number of rows of QR matrix not equal to number of cells");
-    } else if (ncells==0) {
-        throw std::runtime_error("cannot compute variance for zero cells");
     }
     
     // Setting up output objects (note coefs is transposed).
