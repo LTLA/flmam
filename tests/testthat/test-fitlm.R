@@ -71,6 +71,46 @@ test_that("fitLM works for one-way layouts", {
 })
 
 set.seed(1002)
+test_that("fitLM handles subsetting correctly", {
+    y <- matrix(rnorm(1000), ncol=10)
+    f1 <- gl(2, 5)
+    cov <- runif(ncol(y))
+    design <- model.matrix(~cov + f1)
+
+    # Integer subsetting.
+    expect_identical(fitLM(y, design, rows=1:10), fitLM(y[1:10,], design))
+    expect_identical(fitLM(y, design, rows=100:90), fitLM(y[100:90,], design))
+    expect_identical(fitLM(y, design, rows=51), fitLM(y[51,,drop=FALSE], design))
+
+    # Logical subsetting.
+    chosen <- rbinom(nrow(y), 1, 0.5)==1L
+    expect_identical(fitLM(y, design, rows=chosen), fitLM(y[chosen,drop=FALSE,], design))
+
+    # Character subsetting.
+    rownames(y) <- paste0("GENE_", seq_len(nrow(y)))
+    chosen <- sample(rownames(y), 10)
+    expect_identical(fitLM(y, design, rows=chosen), fitLM(y[chosen,drop=FALSE,], design))
+})
+
+set.seed(1003)
+test_that("fitLM works correctly across multiple cores", {
+    y <- matrix(rnorm(1000), ncol=20)
+    g <- factor(sample(3, ncol(y), replace=TRUE))
+
+    old <- bpparam()
+    register(SerialParam())
+    ref <- fitLM(y, g)
+
+    register(MulticoreParam(2))
+    expect_equal(ref, fitLM(y, g))
+
+    register(SnowParam(3))
+    expect_equal(ref, fitLM(y, g))
+
+    register(old)
+})
+
+set.seed(1004)
 test_that("fitLM fails gracefully for silly inputs", {
     y <- matrix(rnorm(1000), ncol=10)
     design <- cbind(1, rep(1, ncol(y)))
@@ -84,7 +124,11 @@ test_that("fitLM fails gracefully for silly inputs", {
     zero.group <- fitLM(y[0,], gl(5, 2))
     expect_identical(dim(zero.group$coefficients), c(0L, 5L))
     expect_identical(length(zero.group$variance), 0L)
-    
+
+    zero.group <- fitLM(y, gl(5, 2), rows=integer(0))
+    expect_identical(dim(zero.group$coefficients), c(0L, 5L))
+    expect_identical(length(zero.group$variance), 0L)
+
     # No libraries.
     expect_error(empty.des <- fitLM(y[,0], design[0,]), "not of full rank")
     empty.des <- fitLM(y[,0], design[0,0])
