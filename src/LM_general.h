@@ -35,7 +35,7 @@ public:
         return qr.get_ncoefs();
     }
 
-    double fit0(double* in, bool var_only=false) {
+    double fit0(double* in, bool var_only=false, bool return_rss=false) {
         qr.multiply(in);
         const int nobs=qr.get_nobs(), ncoefs=qr.get_ncoefs();
         
@@ -44,11 +44,19 @@ public:
             const auto& curval=in[i];
             curvar += curval * curval;
         }
-        curvar /= nobs - ncoefs;
+
+        if (!return_rss) {
+            if (nobs==ncoefs) {
+                curvar=R_NaReal;
+            } else {
+                curvar /= nobs - ncoefs;
+            }
+        }
         
         if (!var_only) {
             qr.backsolve(in);
         }
+
         return curvar;
     }
 private:
