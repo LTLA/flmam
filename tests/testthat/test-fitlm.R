@@ -10,7 +10,7 @@ test_that("fitLM works for design matrices", {
     X <- model.matrix(~cov)
     fit <- fitLM(y, X)
 
-    ref <- lm.fit(x=X, y=as.matrix(t(y)))
+    ref <- lm.fit(x=X, y=as.matrix(Matrix::t(y)))
     expect_equal(fit$coefficients, t(ref$coefficients))
     var.est <- colMeans(ref$effects[-seq_len(ref$rank),]^2)
     expect_equal(fit$variance, var.est)
@@ -32,7 +32,7 @@ test_that("fitLM works for design matrices", {
     expect_false(identical(qr(X.add, LAPACK=TRUE)$pivot, 1:ncol(X.add)))
 
     fit <- fitLM(y, X.add)
-    ref <- lm.fit(x=X.add, y=as.matrix(t(y)))
+    ref <- lm.fit(x=X.add, y=as.matrix(Matrix::t(y)))
     expect_equal(fit$coefficients, t(ref$coefficients))
     var.est <- colMeans(ref$effects[-seq_len(ref$rank),]^2)
     expect_equal(fit$variance, var.est)
@@ -47,7 +47,7 @@ test_that("fitLM works for one-way layouts", {
     colnames(X) <- levels(grouping)
     fit <- fitLM(y, grouping)
 
-    ref <- lm.fit(x=X, y=as.matrix(t(y)))
+    ref <- lm.fit(x=X, y=as.matrix(Matrix::t(y)))
     expect_equal(fit$coefficients, t(ref$coefficients))
     var.est <- colMeans(ref$effects[-seq_len(ref$rank),]^2)
     expect_equal(fit$variance, var.est)
