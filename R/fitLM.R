@@ -6,9 +6,13 @@ fitLM <- function(x, design)
 # created 14 September 2018
 {
     if (!is.null(dim(design))) {
-        qr.out <- qr(design, LAPACK=TRUE)
-        d <- diag(qr.out$qr)
+        if (nrow(design)==0L) {
+            qr.out <- list(qr=matrix(0, nrow(design), ncol(design)), qraux=numeric(ncol(design)), pivot=seq_len(ncol(design)))
+        } else {
+            qr.out <- qr(design, LAPACK=TRUE)
+        }
 
+        d <- diag(qr.out$qr)
         if (!all(abs(d) > 1e-8)) { 
             stop("design matrix is not of full rank")
         }
@@ -22,7 +26,7 @@ fitLM <- function(x, design)
         groups <- as.integer(groups) - 1L
     }
 
-    results <- .Call(cxx_fit_lm, x, qr.out$qr, qr.out$qraux, groups)
+    results <- .Call(cxx_fit_lm, x, qr.out, groups)
     names(results) <- c("coefficients", "variance")
     results$coefficients <- t(results$coefficients)
 
