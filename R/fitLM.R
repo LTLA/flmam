@@ -1,6 +1,6 @@
 #' @export
 #' @importFrom BiocParallel bplapply bpnworkers bpparam
-fitLM <- function(x, design, rows=NULL)
+fitLM <- function(x, design, rows=NULL, BPPARAM=bpparam())
 # Fits a linear model in 'design' to each row of 'x'.
 # 
 # written by Aaron Lun
@@ -37,7 +37,7 @@ fitLM <- function(x, design, rows=NULL)
         rows <- seq_len(nrow(x))
     }
 
-    n.cores <- bpnworkers(bpparam())
+    n.cores <- bpnworkers(BPPARAM)
     if (n.cores > 1L && length(rows)) {
         by.core <- split(rows - 1L, cut(seq_along(rows), n.cores, labels=FALSE))
     } else {

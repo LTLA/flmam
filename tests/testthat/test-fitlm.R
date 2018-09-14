@@ -97,17 +97,9 @@ test_that("fitLM works correctly across multiple cores", {
     y <- matrix(rnorm(1000), ncol=20)
     g <- factor(sample(3, ncol(y), replace=TRUE))
 
-    old <- bpparam()
-    register(SerialParam())
-    ref <- fitLM(y, g)
-
-    register(MulticoreParam(2))
-    expect_equal(ref, fitLM(y, g))
-
-    register(SnowParam(3))
-    expect_equal(ref, fitLM(y, g))
-
-    register(old)
+    ref <- fitLM(y, g, BPPARAM=SerialParam())
+    expect_equal(ref, fitLM(y, g, BPPARAM=MulticoreParam(2)))
+    expect_equal(ref, fitLM(y, g, BPPARAM=SnowParam(3)))
 })
 
 set.seed(1004)
