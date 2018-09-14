@@ -12,7 +12,8 @@ fitLM(x, design, rows=NULL, BPPARAM=bpparam())
     \item{x}{A matrix-like object where each row is a feature and columns are samples.}
     \item{design}{A numeric design matrix with number of rows equal to \code{ncol(x)}.
         Alternatively, a factor of length \code{ncol(x)} for one-way layouts.}
-    \item{rows}{A integer, logical or character vector indicating the rows of \code{x} for which to fit a linear model.}
+    \item{rows}{A integer, logical or character vector indicating the rows of \code{x} for which to fit a linear model.
+        If \code{NULL}, all rows are used.}
     \item{BPPARAM}{A \linkS4class{BiocParallelParam} object specifying how parallelization should be achieved.}
 }
 
@@ -28,7 +29,8 @@ If \code{design} is a factor for a one-way layout, the coefficients are estimate
 }
 
 \value{
-A list containing:
+A \linkS4class{DataFrame} with one row per row of \code{x} (or per entry of \code{rows}).
+Fields are:
 \describe{
 \item{\code{coefficients}:}{A numeric matrix with one row per row of \code{x} and one column per coefficient.
 Contains the estimated values for each coefficient.}

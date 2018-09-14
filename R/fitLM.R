@@ -1,5 +1,6 @@
 #' @export
 #' @importFrom BiocParallel bplapply bpnworkers bpparam
+#' @importFrom S4Vectors DataFrame
 fitLM <- function(x, design, rows=NULL, BPPARAM=bpparam())
 # Fits a linear model in 'design' to each row of 'x'.
 # 
@@ -48,12 +49,10 @@ fitLM <- function(x, design, rows=NULL, BPPARAM=bpparam())
     results <- bplapply(by.core, FUN=.fit_lm_internal, x=x, qr.out=qr.out, groups=groups)
     all.coef <- lapply(results, "[[", i=1)
     all.coef <- t(do.call(cbind, all.coef))
-    all.var <- unlist(lapply(results, "[[", i=2))
+    all.var <- unlist(lapply(results, "[[", i=2), use.names=FALSE)
 
-    results <- list(coefficients=all.coef, variance=all.var)
-    dimnames(results$coefficients) <- list(rownames(x)[rows], coef.names)
-    names(results$variance) <- rownames(x)[rows]
-    results
+    colnames(all.coef) <- coef.names
+    DataFrame(coefficients=I(all.coef), variance=all.var, row.names=rownames(x)[rows])
 }
 
 .fit_lm_internal <- function(x, qr.out, groups, subset) {
