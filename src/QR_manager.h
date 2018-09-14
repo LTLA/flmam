@@ -32,11 +32,13 @@ public:
         constexpr char side='L', trans='T';
         constexpr int ncol=1;
 
-        F77_CALL(dormqr)(&side, &trans, &nobs, &ncol, &ncoef,
-                QR.begin(), &nobs, AUX.begin(), work.data(), &nobs,
-                &tmpwork, &lwork, &info); 
-        if (info) { 
-            throw std::runtime_error("workspace query failed for 'dormqr'");
+        if (nobs) { 
+            F77_CALL(dormqr)(&side, &trans, &nobs, &ncol, &ncoef,
+                    QR.begin(), &nobs, AUX.begin(), work.data(), &nobs,
+                    &tmpwork, &lwork, &info); 
+            if (info) { 
+                throw std::runtime_error("workspace query failed for 'dormqr'");
+            }
         }
     
         lwork=static_cast<int>(tmpwork+0.5);
@@ -47,12 +49,14 @@ public:
     int get_nobs() const {
         return nobs;
     }
-    
+
     int get_ncoefs() const { 
         return ncoef;
     }
 
     void multiply(double* rhs, const char trans='T') {
+        if (!nobs) { return; }
+
         constexpr char side='L';
         constexpr int ncol=1;
         F77_CALL(dormqr)(&side, &trans, &nobs, &ncol, &ncoef, QR.begin(), &nobs, AUX.begin(), rhs, &nobs, work.data(), &lwork, &info); 
@@ -65,6 +69,8 @@ public:
     }
 
     void backsolve(double* rhs) {
+        if (!nobs) { return; }
+
         constexpr char uplo='U', diag='N', trans='N';
         constexpr int ncol=1;
         F77_CALL(dtrtrs)(&uplo, &trans, &diag, &ncoef, &ncol, QR.begin(), &nobs, rhs, &nobs, &info);
