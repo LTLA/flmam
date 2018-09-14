@@ -12,8 +12,9 @@ fitLM <- function(x, design)
             qr.out <- qr(design, LAPACK=TRUE)
         }
 
-        d <- diag(qr.out$qr)
-        if (!all(abs(d) > 1e-8)) { 
+        diags <- abs(diag(qr.out$qr))
+        mat.rank <- sum(diags >= .Machine$double.eps * max(c(diags, -Inf))) # -Inf to avoid warnings.
+        if (mat.rank < ncol(design)) { 
             stop("design matrix is not of full rank")
         }
 
