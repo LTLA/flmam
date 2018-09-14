@@ -1,14 +1,14 @@
 Package: flmam 
-Version: 0.98.0
-Date: 2018-09-01
+Version: 0.98.1
+Date: 2018-09-14
 Title: Fit Linear Models On Any Matrix Representation
 Authors@R: c(person("Aaron", "Lun", role=c("aut", "cre", "cph"),
         email="alun@wehi.edu.au"))
 Depends: R (>= 3.5), BiocParallel
 Imports: Rcpp, stats, methods
 Suggests: testthat, BiocStyle, knitr, rmarkdown, beachmat,
-    HDF5Array, DelayedArray
-biocViews: Clustering, Classification
+    HDF5Array, DelayedArray, DelayedMatrixStats
+biocViews: Regression
 Description: Fits linear models on any matrix representation
     including sparse matrices and HDF5-backed matrices, without
     requiring explicit realization to a dense array.
@@ -17,4 +17,4 @@ License: GPL-3
 LinkingTo: Rcpp, beachmat, Rhdf5lib
 VignetteBuilder: knitr
 SystemRequirements: C++11
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
