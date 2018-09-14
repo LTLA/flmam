@@ -5,9 +5,9 @@ Title: Fit Linear Models On Any Matrix Representation
 Authors@R: c(person("Aaron", "Lun", role=c("aut", "cre", "cph"),
         email="alun@wehi.edu.au"))
 Depends: R (>= 3.5), BiocParallel
-Imports: Rcpp, stats, methods
+Imports: Rcpp, stats, methods, S4Vectors
 Suggests: testthat, BiocStyle, knitr, rmarkdown, beachmat,
-    HDF5Array, DelayedArray, DelayedMatrixStats
+    Matrix, HDF5Array, DelayedArray, DelayedMatrixStats
 biocViews: Regression
 Description: Fits linear models on any matrix representation
     including sparse matrices and HDF5-backed matrices, without
